@@ -1,0 +1,10 @@
+Kết quả rất tệ sau khi thêm dấu
+
+<s> San pham dung kha tot, chat luong on.
+<unk> Thiet ke dep nhung gia hoi cao.
+<unk> Su dung on dinh nhung pin nhanh het.
+<unk> Giao hang nhanh nhung dong goi so sai.
+<unk> Chat lieu ben nhung mau sac khong dep.
+<unk> Gia re nhung hieu nang khong cao. </s>
+
+(venv) PS C:\Users\maxez\OneDrive\Documents\DATN-Product-summary> 

@@ -1,4 +1,4 @@
-from diacritic_restoration import DiacriticRestoration
+from pyvi import ViTokenizer
 
 text = """San pham dung kha tot, chat luong on.
 Thiet ke dep nhung gia hoi cao.
@@ -7,6 +7,5 @@ Giao hang nhanh nhung dong goi so sai.
 Chat lieu ben nhung mau sac khong dep.
 Gia re nhung hieu nang khong cao."""
 
-restorer = DiacriticRestoration()
-result = restorer.restore(text)
+result = ViTokenizer.tokenize(text)
 print(result)
