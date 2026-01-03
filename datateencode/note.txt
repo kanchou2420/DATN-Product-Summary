@@ -1,0 +1,75 @@
+Đặc điểm của Teencode Việt Nam
+
+Viết tắt: "k" → "không", "vs" → "với", "ck" → "chị/chú ấy"
+Thiếu dấu: "chua biet" → "chưa biết"
+Leet speak: "ck" → "chồng", "vk" → "vợ"
+Từ lóng: "bựa", "flex", "stan"
+Ngữ cảnh chat: emoji, icon, từ đặc thù mạng xã hội
+
+1.2. Lựa chọn kiến trúc
+Sử dụng mBERT-based Sequence-to-Sequence với Encoder-Decoder:
+
+Encoder: Hiểu ngữ cảnh từ câu input (teencode)
+Decoder: Sinh ra câu output (văn bản chuẩn)
+Ưu điểm: Xử lý tốt ngữ cảnh, multilingual support cho tiếng Việt
+
+Giải thích thành phần code:
+
+1 Tokenizer - Biến text thành numbers
+	Model chỉ hiểu số, không hiểu chữ
+	Mỗi từ/âm tiết được map sang một ID duy nhất
+
+2 Model Architecture - BART
+	ENCODER (6 layers)
+   	- Self-Attention: Mỗi token nhìn vào tất cả tokens khác
+  	 - Feed Forward: Transform representations
+   	- Output: Contextualized embeddings
+  	 ↓
+	DECODER (6 layers)
+   	- Self-Attention: Nhìn vào output đã generate
+   	- Cross-Attention: Nhìn vào encoder outputs
+   	- Feed Forward
+  	 ↓
+	LINEAR + SOFTMAX
+ 	  - Dự đoán token tiếp theo
+  	 ↓
+	OUTPUT: "không biết"
+
+
+3 Loss Function - Cross Entropy
+	# Công thức:
+	Loss = -Σ y_true * log(y_pred)
+
+	# Ví dụ:
+	Target: "không biết"
+	Model predicts: 
+ 	 - Token 1: P("không") = 0.9 ✓
+ 	 - Token 2: P("biết") = 0.8 ✓
+  
+	Loss = -[log(0.9) + log(0.8)] = 0.27 (thấp = tốt)
+
+
+4 Optimizer - AdamW
+
+	Nguyên lý:
+
+		Adam: Adaptive learning rates cho mỗi parameter
+		W: Weight decay (L2 regularization)
+
+		θ_new = θ_old - lr * gradient - λ * θ_old
+  		  	   ↑           ↑            ↑
+      			weight   gradient    weight decay
+
+5 Beam Search - Decoding Strategy
+
+	**So sánh với Greedy:**
+	```
+	Greedy (chọn 1 tốt nhất mỗi bước):
+	Step 1: "tôi" (0.5)
+	Step 2: "tôi không" (0.3)
+	Result: "tôi không" (0.15)
+
+	Beam Search (giữ top-k):
+	Step 1: ["tôi"(0.5), "mình"(0.4), "em"(0.3)]
+	Step 2: ["tôi đang"(0.4), "mình không"(0.35), "tôi không"(0.3)]
+	Result: "tôi đang" (0.4) ← Tốt hơn!
